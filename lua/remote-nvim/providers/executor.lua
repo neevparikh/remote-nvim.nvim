@@ -76,7 +76,7 @@ function Executor:run_executor_job(command, job_opts)
 
   self:reset() -- Reset job internal state variables
   self._job_id = vim.fn.jobstart(command, {
-    pty = true,
+    pty = false,
     on_stdout = function(_, data_chunk)
       self:process_stdout(data_chunk, job_opts.stdout_cb)
     end,
