@@ -15,6 +15,7 @@ local Executor = require("remote-nvim.middleclass")("Executor")
 ---@field stdout_cb function? Standard output callback
 ---@field exit_cb function? On exit callback
 ---@field compression remote-nvim.provider.Executor.JobOpts.CompressionOpts? Compression options; for upload and download
+---@field pty boolean? Should run command in a pty
 
 ---Initialize executor instance
 ---@param host string Host name
@@ -74,9 +75,14 @@ function Executor:run_executor_job(command, job_opts)
   local co = coroutine.running()
   job_opts = job_opts or {}
 
+  local pty = job_opts.pty
+  if job_opts.pty == nil then
+    pty = true
+  end
+
   self:reset() -- Reset job internal state variables
   self._job_id = vim.fn.jobstart(command, {
-    pty = false,
+    pty = pty,
     on_stdout = function(_, data_chunk)
       self:process_stdout(data_chunk, job_opts.stdout_cb)
     end,
